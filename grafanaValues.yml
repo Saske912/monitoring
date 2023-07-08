@@ -1,0 +1,69 @@
+ingress:
+  enabled: true
+  hosts:
+  - ${domain}
+  annotations: 
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/limit-rpm: "100"
+    nginx.ingress.kubernetes.io/limit-connections: "10"
+    cert-manager.io/cluster-issuer: "pfile"
+  tls: 
+    - secretName: "${domain}-tls"
+      hosts:
+        - ${domain}
+smtp:
+  enabled: true
+  host: ${domain}
+  user: ${grafana.username}
+  password: ${grafana.password}
+  ehlo_identity: ${mail.implicit-host}
+  from_address: ${grafana.username}@${domain}
+# datasources:
+#   datasources.yaml:
+#     apiVersion: 1
+#     datasources:
+#       - name: Prometheus
+#         type: prometheus
+#         url: http://prometheus-server.prometheus
+#         isDefault: true
+#       - name: InfluxDB
+#         type: influxdb
+#         url: http://influxdb.metrics:8086
+#         access: proxy
+#         jsonData:
+#           version: Flux
+#           organization: ${influx.organization}
+#           defaultBucket: ${influx.bucket}
+#           tlsSkipVerify: true
+#         secureJsonData:
+#           token: ${influx.token}
+# notifiers:
+#   notifiers.yaml:
+#     apiVersion: 1
+#     notifiers:
+#       - name: telegram
+#         type: telegram
+#         org_name: ${domain}
+#         is_default: true
+#         uid: notifier1
+#         settings:
+#           bottoken: ${telegram.token}
+#           chatid: ${telegram.chatID}
+#           uploadImage: true
+# alerting:
+#   contactpoints.yaml:
+#     apiVersion: 1
+#     contactPoints:
+#       - orgId: 1
+#         name: cp_1
+#         receivers:
+#           - uid: first_uid
+#             type: pagerduty
+#             settings:
+#               integrationKey: XXX
+#               severity: critical
+#               class: ping failure
+#               component: Grafana
+#               group: app-stack
+#               summary: |
+#                 {{ `{{ include "default.message" . }}` }}
