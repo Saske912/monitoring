@@ -67,6 +67,10 @@ data "vault_generic_secret" "mail" {
   path = "kv/mail"
 }
 
+data "vault_generic_secret" "influx" {
+  path = "kv/influxdb"
+}
+
 locals {
   grafana = data.vault_generic_secret.graf.data
   mail    = jsondecode(data.vault_generic_secret.graf.data["mail"])
@@ -117,73 +121,6 @@ resource "helm_release" "grafana" {
   }
   values = [templatefile("grafanaValues.yml", { domain = local.grafana["domain"],
     mail         = data.vault_generic_secret.mail.data, grafana = local.grafana,
-    grafana-mail = local.mail
+    grafana-mail = local.mail, influx = data.vault_generic_secret.influx.data
   })]
 }
-
-
-
-# data "vault_generic_secret" "minio" {
-#   path = "kv/minio"
-# }
-
-# data "vault_generic_secret" "cluster" {
-#   path = "kv/cluster"
-# }
-
-# resource "helm_release" "loki" {
-#   chart            = "loki"
-#   name             = "loki"
-#   namespace        = "loki"
-#   repository       = "https://grafana.github.io/helm-charts"
-#   create_namespace = true
-#   version          = "5.8.9"
-#   set {
-#     name  = "loki.storage.s3.endpoint"
-#     value = data.vault_generic_secret.minio.data["host"]
-#   }
-#   set {
-#     name  = "loki.storage.s3.region"
-#     value = data.vault_generic_secret.minio.data["region"]
-#   }
-#   set {
-#     name  = "loki.storage.s3.secretAccessKey"
-#     value = data.vault_generic_secret.minio.data["secret_key"]
-#   }
-#   set {
-#     name  = "loki.storage.s3.accessKeyId"
-#     value = data.vault_generic_secret.minio.data["key"]
-#   }
-#   set {
-#     name  = "test.prometheusAddress"
-#     value = "http://prometheus-server.prometheus"
-#   }
-#   set {
-#     name  = "global.clusterDomain"
-#     value = data.vault_generic_secret.cluster.data["domain"]
-#   }
-#   set {
-#     name  = "write.replicas"
-#     value = 1
-#   }
-#   set {
-#     name  = "write.autoscaling.enabled"
-#     value = true
-#   }
-#   set {
-#     name  = "read.replicas"
-#     value = 1
-#   }
-#   set {
-#     name  = "read.autoscaling.enabled"
-#     value = true
-#   }
-#   set {
-#     name  = "backend.replicas"
-#     value = 1
-#   }
-#   set {
-#     name  = "backend.autoscaling.enabled"
-#     value = true
-#   }
-# }
