@@ -1,6 +1,6 @@
 terraform {
   backend "kubernetes" {
-    secret_suffix = "prometheus"
+    secret_suffix = "monitoring"
     config_path   = "~/.kube/config"
   }
   required_providers {
@@ -14,10 +14,10 @@ terraform {
     kubernetes = {
       source = "hashicorp/kubernetes"
     }
-    grafana = {
-      source  = "grafana/grafana"
-      version = "2.0.0"
-    }
+    # grafana = {
+    #   source  = "grafana/grafana"
+    #   version = "2.0.0"
+    # }
   }
 }
 
@@ -29,6 +29,10 @@ provider "helm" {
 
 provider "vault" {
   address = "http://10.0.0.45:8200"
+}
+
+provider "kubernetes" {
+  config_path = "~/.kube/config"
 }
 
 resource "helm_release" "prometheus" {
@@ -63,13 +67,34 @@ data "vault_generic_secret" "mail" {
   path = "kv/mail"
 }
 
+locals {
+  grafana = data.vault_generic_secret.graf.data
+  mail    = jsondecode(data.vault_generic_secret.graf.data["mail"])
+}
+
+resource "kubernetes_namespace_v1" "grafana" {
+  metadata {
+    name = "grafana"
+  }
+}
+
+resource "kubernetes_secret_v1" "smtp" {
+  metadata {
+    name      = "smtp"
+    namespace = kubernetes_namespace_v1.grafana.metadata[0].name
+  }
+  data = {
+    "user"     = "${local.mail.user}@${local.mail.domain}"
+    "password" = local.grafana["password"]
+  }
+}
+
 resource "helm_release" "grafana" {
-  chart            = "grafana"
-  name             = "grafana"
-  namespace        = "grafana"
-  repository       = "https://grafana.github.io/helm-charts"
-  create_namespace = true
-  version          = "6.57.4"
+  chart      = "grafana"
+  name       = "grafana"
+  namespace  = kubernetes_namespace_v1.grafana.metadata[0].name
+  repository = "https://grafana.github.io/helm-charts"
+  version    = "6.57.4"
   set {
     name  = "persistence.enabled"
     value = true
@@ -86,8 +111,13 @@ resource "helm_release" "grafana" {
     name  = "adminPassword"
     value = data.vault_generic_secret.graf.data["password"]
   }
-  values = [templatefile("grafanaValues.yml", { domain = data.vault_generic_secret.graf.data["domain"],
-    mail = data.vault_generic_secret.mail.data, grafana = data.vault_generic_secret.graf.data
+  set {
+    name  = "smtp.existingSecret"
+    value = kubernetes_secret_v1.smtp.metadata[0].name
+  }
+  values = [templatefile("grafanaValues.yml", { domain = local.grafana["domain"],
+    mail         = data.vault_generic_secret.mail.data, grafana = local.grafana,
+    grafana-mail = local.mail
   })]
 }
 

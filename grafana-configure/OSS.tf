@@ -5,6 +5,7 @@ locals {
   influxdb = data.vault_generic_secret.influx.data
 }
 
+
 resource "grafana_data_source" "inflxudb" {
   type        = "influxdb"
   name        = "influxDBv2"
@@ -12,9 +13,9 @@ resource "grafana_data_source" "inflxudb" {
   access_mode = "proxy"
   json_data_encoded = jsonencode({
     version       = "Flux"
-    orgranization = local.influxdb.organization
-    defaultBucket = local.influxdb.bucket
-    token         = local.influxdb.token
+    orgranization = local.influxdb["organization"]
+    defaultBucket = local.influxdb["bucket"]
+    token         = local.influxdb["token"]
   })
 }
 

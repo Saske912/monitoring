@@ -1,8 +1,5 @@
 
-provider "grafana" {
-  url  = "https://${data.vault_generic_secret.graf.data["domain"]}"
-  auth = "${data.vault_generic_secret.graf.data["username"]}:${data.vault_generic_secret.graf.data["password"]}"
-}
+
 locals {
   telegram_bot = jsondecode(data.vault_generic_secret.kolve.data["telegramBot"])
 }
@@ -13,7 +10,6 @@ resource "grafana_contact_point" "telegram" {
     chat_id = local.telegram_bot.chatID
     token   = local.telegram_bot.token
   }
-  depends_on = [helm_release.grafana]
 }
 
 data "vault_generic_secret" "mihail" {
@@ -21,8 +17,8 @@ data "vault_generic_secret" "mihail" {
 }
 
 resource "grafana_message_template" "email-template" {
-  name       = "email шаблон"
-  template   = <<EOT
+  name     = "email шаблон"
+  template = <<EOT
 {{- define "email.message_alert" -}}
 {{- range .Labels.SortedPairs }}{{ .Name }}={{ .Value }} {{ end }} имеет значение
 {{- range $k, $v := .Values }} {{ $k }}={{ $v }}{{ end }}
@@ -47,28 +43,28 @@ resource "grafana_message_template" "email-template" {
 
 {{ end }}
 EOT
-  depends_on = [helm_release.grafana]
 }
 
 resource "grafana_contact_point" "email" {
-  depends_on = [helm_release.grafana]
-  name       = "email"
+  name = "email"
   email {
     addresses               = [data.vault_generic_secret.mihail.data["email"]]
     message                 = "{{ len .Alerts.Firing }} важных уведомлений."
     subject                 = "{{ template \"default.title\" .}}"
     single_email            = true
     disable_resolve_message = false
-    # template = grafa
   }
 }
 
 resource "grafana_mute_timing" "warnings" {
-  depends_on = [helm_release.grafana]
-  name       = "warnings"
+  name = "warnings"
   intervals {
     times {
       start = "18:00"
+      end   = "23:59"
+    }
+    times {
+      start = "00:00"
       end   = "10:00"
     }
     weekdays = ["sunday", "saturday"]
@@ -76,18 +72,20 @@ resource "grafana_mute_timing" "warnings" {
 }
 
 resource "grafana_mute_timing" "errors" {
-  depends_on = [helm_release.grafana]
-  name       = "errors"
+  name = "errors"
   intervals {
     times {
       start = "22:00"
+      end   = "23:59"
+    }
+    times {
+      start = "00:00"
       end   = "08:00"
     }
   }
 }
 
 resource "grafana_notification_policy" "policy" {
-  depends_on    = [helm_release.grafana]
   group_by      = ["..."]
   contact_point = grafana_contact_point.email.name
 

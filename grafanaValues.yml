@@ -11,59 +11,23 @@ ingress:
     - secretName: "${domain}-tls"
       hosts:
         - ${domain}
-smtp:
-  enabled: true
-  host: ${domain}
-  user: ${grafana.username}
-  password: ${grafana.password}
-  ehlo_identity: ${mail.implicit-host}
-  from_address: ${grafana.username}@${domain}
-# datasources:
-#   datasources.yaml:
-#     apiVersion: 1
-#     datasources:
-#       - name: Prometheus
-#         type: prometheus
-#         url: http://prometheus-server.prometheus
-#         isDefault: true
-#       - name: InfluxDB
-#         type: influxdb
-#         url: http://influxdb.metrics:8086
-#         access: proxy
-#         jsonData:
-#           version: Flux
-#           organization: ${influx.organization}
-#           defaultBucket: ${influx.bucket}
-#           tlsSkipVerify: true
-#         secureJsonData:
-#           token: ${influx.token}
-# notifiers:
-#   notifiers.yaml:
-#     apiVersion: 1
-#     notifiers:
-#       - name: telegram
-#         type: telegram
-#         org_name: ${domain}
-#         is_default: true
-#         uid: notifier1
-#         settings:
-#           bottoken: ${telegram.token}
-#           chatid: ${telegram.chatID}
-#           uploadImage: true
-# alerting:
-#   contactpoints.yaml:
-#     apiVersion: 1
-#     contactPoints:
-#       - orgId: 1
-#         name: cp_1
-#         receivers:
-#           - uid: first_uid
-#             type: pagerduty
-#             settings:
-#               integrationKey: XXX
-#               severity: critical
-#               class: ping failure
-#               component: Grafana
-#               group: app-stack
-#               summary: |
-#                 {{ `{{ include "default.message" . }}` }}
+grafana.ini:
+  smtp:
+    enabled: true
+    host: ${mail["implicit-host"]}:587
+    ehlo_identity: ${grafana-mail.domain}
+    from_address: ${grafana-mail.user}@${grafana-mail.domain}
+    skip_verify: true
+  paths:
+    data: /var/lib/grafana/
+    logs: /var/log/grafana
+    plugins: /var/lib/grafana/plugins
+    provisioning: /etc/grafana/provisioning
+  analytics:
+    check_for_updates: true
+  log:
+    mode: console
+  grafana_net:
+    url: https://grafana.net
+  server:
+    domain: "{{ if (and .Values.ingress.enabled .Values.ingress.hosts) }}{{ .Values.ingress.hosts | first }}{{ else }}''{{ end }}"
