@@ -49,10 +49,6 @@ resource "helm_release" "prometheus" {
     name  = "prometheus-pushgateway.enabled"
     value = false
   }
-  #   set {
-  #     name  = "server.baseURL"
-  #     value = "prom.kolve.ru"
-  #   }
 }
 
 data "vault_generic_secret" "graf" {
@@ -118,6 +114,10 @@ resource "helm_release" "grafana" {
   set {
     name  = "smtp.existingSecret"
     value = kubernetes_secret_v1.smtp.metadata[0].name
+  }
+  set_list {
+    name  = "plugins"
+    value = ["redis-datasource"]
   }
   values = [templatefile("grafanaValues.yml", { domain = local.grafana["domain"],
     mail         = data.vault_generic_secret.mail.data, grafana = local.grafana,

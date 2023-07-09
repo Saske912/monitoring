@@ -31,18 +31,18 @@ grafana.ini:
     url: https://grafana.net
   server:
     domain: "{{ if (and .Values.ingress.enabled .Values.ingress.hosts) }}{{ .Values.ingress.hosts | first }}{{ else }}''{{ end }}"
-datasources:
-  datasources.yaml:
-    apiVersion: 1
-    datasources:
-      - name: InfluxDB
-        type: influxdb
-        url: http://influxdb.metrics:8086
-        access: proxy
-        jsonData:
-          version: Flux
-          organization: ${influx.organization}
-          defaultBucket: ${influx.bucket}
-          tlsSkipVerify: true
-        secureJsonData:
-          token: ${influx.token}
+# datasources:
+#   datasources.yaml:
+#     apiVersion: 1
+#     datasources:
+#       - name: InfluxDB
+#         type: influxdb
+#         url: http://influxdb.metrics:8086
+#         access: proxy
+#         jsonData:
+#           version: Flux
+#           organization: ${influx.organization}
+#           defaultBucket: ${influx.bucket}
+#           tlsSkipVerify: true
+#         secureJsonData:
+#           token: ${influx.token}

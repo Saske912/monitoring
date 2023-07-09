@@ -2,6 +2,7 @@
 
 locals {
   telegram_bot = jsondecode(data.vault_generic_secret.kolve.data["telegramBot"])
+  database     = jsondecode(data.vault_generic_secret.kolve.data["database"])
 }
 
 resource "grafana_contact_point" "telegram" {
