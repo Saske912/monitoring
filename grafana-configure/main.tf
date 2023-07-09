@@ -31,7 +31,8 @@ locals {
 }
 
 provider "grafana" {
-  url  = "https://${local.grafana["domain"]}"
+  # url  = "https://${local.grafana["domain"]}"
+  url  = "http://10.0.0.114"
   auth = "${local.grafana["username"]}:${local.grafana["password"]}"
 }
 
