@@ -43,6 +43,18 @@ resource "grafana_team" "team" {
   }
 }
 
+resource "grafana_organization" "orgranization" {
+  name         = data.vault_generic_secret.info.data["name"]
+  admin_user   = data.vault_generic_secret.graf.data["username"]
+  create_users = false
+  editors = [
+    grafana_user.user.email
+  ]
+  viewers = [
+    grafana_user.cat.email
+  ]
+}
+
 resource "grafana_folder" "folder" {
   title = data.vault_generic_secret.info.data["name"]
 }

@@ -14,10 +14,10 @@ terraform {
     kubernetes = {
       source = "hashicorp/kubernetes"
     }
-    # grafana = {
-    #   source  = "grafana/grafana"
-    #   version = "2.0.0"
-    # }
+    minio = {
+      source  = "Ferlab-Ste-Justine/minio"
+      version = "0.2.0"
+    }
   }
 }
 
@@ -48,6 +48,18 @@ resource "helm_release" "prometheus" {
   set {
     name  = "prometheus-pushgateway.enabled"
     value = false
+  }
+  set {
+    name  = "server.persistentVolume.size"
+    value = "40Gi"
+  }
+  set {
+    name  = "alertmanager.enabled"
+    value = false
+  }
+  set {
+    name  = "server.retention"
+    value = "10d"
   }
 }
 
