@@ -76,6 +76,6 @@ resource "grafana_data_source" "postgresql" {
 resource "grafana_data_source" "loki" {
   type               = "loki"
   name               = "Loki"
-  url                = "loki-backend.loki:3100"
+  url                = "http://loki-gateway.loki"
   basic_auth_enabled = false
 }

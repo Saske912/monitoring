@@ -11,6 +11,9 @@ terraform {
     vault = {
       source = "hashicorp/vault"
     }
+    kubernetes = {
+      source = "hashicorp/kubernetes"
+    }
   }
 }
 
@@ -24,6 +27,9 @@ provider "vault" {
   address = "http://10.0.0.45:8200"
 }
 
+provider "kubernetes" {
+  config_path = "~/.kube/config"
+}
 
 data "vault_generic_secret" "cluster" {
   path = "kv/cluster"
@@ -40,28 +46,28 @@ resource "helm_release" "loki" {
   repository       = "https://grafana.github.io/helm-charts"
   create_namespace = true
   version          = "5.8.9"
-  # set {
-  #   name  = "loki.storage.s3.endpoint"
-  #   value = data.vault_generic_secret.minio.data["host"]
-  # }
-  # set {
-  #   name  = "loki.storage.s3.region"
-  #   value = data.vault_generic_secret.minio.data["region"]
-  # }
-  # set {
-  #   name  = "loki.storage.s3.secretAccessKey"
-  #   value = data.vault_generic_secret.minio.data["secret_key"]
-  # }
-  # set {
-  #   name  = "loki.storage.s3.accessKeyId"
-  #   value = data.vault_generic_secret.minio.data["key"]
-  # }
-  # set {
-  #   name  = "loki.storage.s3.insecure"
-  #   value = true
-  # }
   set {
-    name  = "minio.enabled"
+    name  = "loki.storage.s3.endpoint"
+    value = "http://${data.vault_generic_secret.minio.data["host"]}"
+  }
+  set {
+    name  = "loki.storage.s3.region"
+    value = data.vault_generic_secret.minio.data["region"]
+  }
+  set {
+    name  = "loki.storage.s3.secretAccessKey"
+    value = data.vault_generic_secret.minio.data["secret_key"]
+  }
+  set {
+    name  = "loki.storage.s3.accessKeyId"
+    value = data.vault_generic_secret.minio.data["key"]
+  }
+  set {
+    name  = "loki.storage.s3.insecure"
+    value = true
+  }
+  set {
+    name  = "loki.storage.s3.s3ForcePathStyle"
     value = true
   }
   set {

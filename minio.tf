@@ -18,12 +18,12 @@ provider "minio" {
 }
 
 
-# resource "minio_s3_bucket" "chunks" {
-#   bucket = "chunks"
-# }
-# resource "minio_s3_bucket" "ruler" {
-#   bucket = "ruler"
-# }
-# resource "minio_s3_bucket" "admin" {
-#   bucket = "admin"
-# }
+resource "minio_s3_bucket" "chunks" {
+  bucket = "chunks"
+}
+resource "minio_s3_bucket" "ruler" {
+  bucket = "ruler"
+}
+resource "minio_s3_bucket" "admin" {
+  bucket = "admin"
+}
