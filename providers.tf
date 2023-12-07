@@ -18,3 +18,9 @@ provider "postgresql" {
   sslmode         = "require"
   connect_timeout = 15
 }
+
+provider "gitlab" {
+  token    = var.gitlab.token
+  base_url = var.gitlab.host
+}
+

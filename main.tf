@@ -15,5 +15,9 @@ terraform {
       source  = "cyrilgdn/postgresql"
       version = "1.21.1-beta.1"
     }
+    gitlab = {
+      source  = "gitlabhq/gitlab"
+      version = "16.4.1"
+    }
   }
 }

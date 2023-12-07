@@ -45,3 +45,11 @@ locals {
   postgres =data.vault_generic_secret.postgresql.data
   redis    = data.vault_generic_secret.redis.data
 }
+
+data "grafana_data_source" "prometheus" {
+  name = "Prometheus"
+}
+
+data "grafana_data_source" "PostgreSQL" {
+  name = "PostgreSQL"
+}

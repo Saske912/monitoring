@@ -30,3 +30,16 @@ variable "telegram_bot" {
 variable "alert_email" {
   type = string
 }
+
+variable "organizations" {
+  type = map({
+    teams = map(set(string))
+  })
+}
+
+variable "gitlab" {
+  type = object({
+    host  = string
+    token = string
+  })
+}

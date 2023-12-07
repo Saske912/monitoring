@@ -1,7 +1,3 @@
-data "grafana_data_source" "prometheus" {
-  name = "Prometheus"
-}
-
 resource "grafana_dashboard" "dashboard" {
   config_json = jsonencode({
     title = "CPU Metrics"
@@ -188,5 +184,39 @@ resource "grafana_dashboard" "dashboard" {
     refresh       = "5s"
     schemaVersion = 21
     version       = 0
+  })
+}
+
+resource "grafana_dashboard" "postgres" {
+  folder = grafana_folder.folder.id
+  config_json = jsonencode({
+    title = "Базы данных"
+    style = "dark"
+    panels = [
+      {
+        type       = "table"
+        title      = "активные подключения к PostgreSQL"
+        datasource = grafana_data_source.postgresql.name
+        gridPos = {
+          w = 8
+          h = 7
+          x = 6
+          y = 7
+        }
+        targets = [
+          {
+            rawQuery = true
+            format   = "table"
+            alias    = "connections"
+            rawSql   = <<EOT
+SELECT datname AS база, count(*) AS количество
+FROM pg_stat_activity
+WHERE state = 'active'
+GROUP BY datname;
+EOT
+          }
+        ]
+      },
+    ]
   })
 }
