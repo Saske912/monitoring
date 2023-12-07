@@ -1,20 +1,9 @@
-
-
-locals {
-  telegram_bot = jsondecode(data.vault_generic_secret.kolve.data["telegramBot"])
-  database     = jsondecode(data.vault_generic_secret.kolve.data["database"])
-}
-
 resource "grafana_contact_point" "telegram" {
   name = "telegram"
   telegram {
-    chat_id = local.telegram_bot.chatID
-    token   = local.telegram_bot.token
+    chat_id = var.telegram_bot.chat_id
+    token   = var.telegram_bot.token
   }
-}
-
-data "vault_generic_secret" "mihail" {
-  path = "kv/mihail"
 }
 
 resource "grafana_message_template" "email-template" {
@@ -49,7 +38,7 @@ EOT
 resource "grafana_contact_point" "email" {
   name = "email"
   email {
-    addresses               = [data.vault_generic_secret.mihail.data["email"]]
+    addresses               = [var.alert_email]
     message                 = "{{ len .Alerts.Firing }} важных уведомлений."
     subject                 = "{{ template \"default.title\" .}}"
     single_email            = true
