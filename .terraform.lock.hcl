@@ -9,6 +9,14 @@ provider "registry.terraform.io/cyrilgdn/postgresql" {
   ]
 }
 
+provider "registry.terraform.io/gitlabhq/gitlab" {
+  version     = "16.4.1"
+  constraints = "16.4.1"
+  hashes = [
+    "h1:43whi3v8d4xE6FqX4NxnWSEbw+hAL71F5AJFkMmk9+s=",
+  ]
+}
+
 provider "registry.terraform.io/grafana/grafana" {
   version     = "2.0.0"
   constraints = "2.0.0"

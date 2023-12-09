@@ -7,15 +7,14 @@ locals {
         users = users
       }
     }
-  ])
+  ]...)
 }
 
-
 resource "grafana_team" "team" {
-  for_each = local.teams
-  name     = each.key
-  org_id   = grafana_organization.orgranization[each.value.org].id
-  members  = [each.value.users]
+  depends_on = [grafana_user.user]
+  for_each   = local.teams
+  name       = each.key
+  members    = [for each in each.value.users : "${each}@facecast.net"]
   preferences {
     timezone = "browser"
   }

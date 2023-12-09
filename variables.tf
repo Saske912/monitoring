@@ -27,14 +27,15 @@ variable "telegram_bot" {
     token   = string
   })
 }
+
 variable "alert_email" {
   type = string
 }
 
 variable "organizations" {
-  type = map({
+  type = map(object({
     teams = map(set(string))
-  })
+  }))
 }
 
 variable "gitlab" {

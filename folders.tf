@@ -1,6 +1,6 @@
-# resource "grafana_folder" "folder" {
-#   title = data.vault_generic_secret.info.data["name"]
-# }
+resource "grafana_folder" "folder" {
+  title = "system"
+}
 
 # resource "grafana_folder_permission" "collectionPermission" {
 #   folder_uid = grafana_folder.folder.uid

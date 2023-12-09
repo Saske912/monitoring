@@ -1,7 +1,7 @@
 resource "grafana_rule_group" "systemAlerts" {
   name             = "systemAlerts"
   folder_uid       = grafana_folder.folder.uid
-  org_id           = grafana_organization.orgranization.id
+  org_id           = 1
   interval_seconds = 60
   rule {
     name      = "CPU and Memory Load Alert"
