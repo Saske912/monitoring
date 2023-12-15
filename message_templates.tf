@@ -30,8 +30,19 @@ EOT
 resource "grafana_message_template" "telegram-template" {
   name     = "telegram шаблон"
   template = <<EOT
-  message
-{{ range .CommonLabels.SortedPairs }} - {{ .Name }} = {{ .Value }}
-{{ end }}
+**АЛЕРТ: {alertname}**
+**Описание:** {description}
+**Тип:** {severity}
+
+**Метки:**
+- *Контейнер:* {container}
+- *Экземпляр:* {instance}
+- *Под: *{pod}
+- *Сервис:* {service}
+
+**Аннотации:**
+- *Краткое описание:* {summary}
+
+[Ссылка на дашборд](<{dashboard}>) | [Ссылка на панель](<{panel}>) | [Управление уведомлениями](<{silence}>)
 EOT
 }
