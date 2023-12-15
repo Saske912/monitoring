@@ -22,9 +22,11 @@ resource "grafana_notification_policy" "policy" {
       match = "="
       value = "true"
     }
-    group_wait      = "35s"
-    group_interval  = "5m"
-    repeat_interval = "30m"
+    group_wait = "35s"
+    # group_interval  = "5m"
+    # repeat_interval = "30m"
+    group_interval  = "10s"
+    repeat_interval = "30s"
     contact_point   = grafana_contact_point.telegram.name
     mute_timings    = [grafana_mute_timing.errors.name]
     group_by        = ["error"]
