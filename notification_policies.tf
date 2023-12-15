@@ -4,7 +4,7 @@ resource "grafana_notification_policy" "policy" {
 
   group_wait      = "45s"
   group_interval  = "6m"
-  repeat_interval = "5h"
+  repeat_interval = "3h"
   policy {
     matcher {
       label = "warning"
@@ -24,7 +24,7 @@ resource "grafana_notification_policy" "policy" {
     }
     group_wait      = "35s"
     group_interval  = "5m"
-    repeat_interval = "3h"
+    repeat_interval = "30m"
     contact_point   = grafana_contact_point.telegram.name
     mute_timings    = [grafana_mute_timing.errors.name]
     group_by        = ["error"]
@@ -37,7 +37,7 @@ resource "grafana_notification_policy" "policy" {
     }
     group_wait      = "10s"
     group_interval  = "1m"
-    repeat_interval = "1h"
+    repeat_interval = "5m"
     contact_point   = grafana_contact_point.telegram.name
     group_by        = ["critical"]
   }
