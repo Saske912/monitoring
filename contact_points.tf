@@ -14,5 +14,8 @@ resource "grafana_contact_point" "telegram" {
   telegram {
     chat_id = var.telegram_bot.chat_id
     token   = var.telegram_bot.token
+    #     message = <<EOT
+    # {{ template "${grafana_message_template.telegram-template.name}" . }}
+    # EOT
   }
 }

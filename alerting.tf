@@ -43,7 +43,7 @@
 #               "evaluator": {"type": "gt", "params": [90]},
 #               "operator": {"type": "or"},
 #               "query": {"params": ["A"], "type": "query"},
-#               "reducer": {"type": "avg", "params": []},
+#               "reducer": {"type": "mean", "params": []},
 #               "type": "query"
 #             }
 #           ],
@@ -52,7 +52,7 @@
 #           "hide": false,
 #           "intervalMs": 10000,
 #           "maxDataPoints": 4320,
-#           "reducer": "avg",
+#           "reducer": "mean",
 #           "refId": "B",
 #           "type": "reduce"
 #         }
@@ -72,7 +72,7 @@
 #         to   = 0
 #       }
 #       model = jsonencode({
-#         expression = "$B > 70",
+#         expression = "$B > 15",
 #         type       = "math",
 #         refId      = "C"
 #       })

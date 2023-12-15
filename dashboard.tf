@@ -1,6 +1,6 @@
 resource "grafana_dashboard" "dashboard" {
-  folder = grafana_folder.folder.uid
   org_id = 1
+  folder = grafana_folder.folder.id
   config_json = jsonencode({
     title = "CPU Metrics"
     style = "dark"

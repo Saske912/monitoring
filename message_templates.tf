@@ -26,3 +26,12 @@ resource "grafana_message_template" "email-template" {
 {{ end }}
 EOT
 }
+
+resource "grafana_message_template" "telegram-template" {
+  name     = "telegram шаблон"
+  template = <<EOT
+  message
+{{ range .CommonLabels.SortedPairs }} - {{ .Name }} = {{ .Value }}
+{{ end }}
+EOT
+}
